@@ -32,3 +32,30 @@ export const createUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, age } = req.body;
+    const { rows } = await pool.query(
+      "UPDATE users set first_name = $1, last_name = $2, age = $3 WHERE id = $4 RETURNING * ",
+      [first_name, last_name, age, id]
+    );
+    return res.json({ message: "User updates", data: rows });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUserById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      "DELETE from users WHERE id = $1 RETURNING *",
+      [id]
+    );
+    return res.json({ message: "User deleted", data: rows });
+  } catch (error) {
+    next(error);
+  }
+};
